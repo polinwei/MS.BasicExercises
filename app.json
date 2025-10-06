@@ -1,0 +1,32 @@
+{
+  "id": "c6b1d2f1-019a-4140-98a5-995f3b1424ae",
+  "name": "MS.BasicExercises",
+  "publisher": "MS",
+  "version": "1.0.0.0",
+  "brief": "Customization by MS(MingSheng)",
+  "description": "Customization by MS(MingSheng)",
+  "privacyStatement": "",
+  "EULA": "",
+  "help": "",
+  "url": "",
+  "logo": "",
+  "dependencies": [],
+  "screenshots": [],
+  "platform": "1.0.0.0",
+  "application": "26.0.0.0",
+  "idRanges": [
+    {
+      "from": 60100,
+      "to": 60149
+    }
+  ],
+  "resourceExposurePolicy": {
+    "allowDebugging": true,
+    "allowDownloadingSource": false,
+    "includeSourceInSymbolFile": true
+  },
+  "runtime": "15.2",
+  "features": [
+    "NoImplicitWith"
+  ]
+}
