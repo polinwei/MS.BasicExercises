@@ -19,6 +19,11 @@ table 60100 "Basic Table"
         {
             DataClassification = CustomerContent;
         }
+        field(4; "User ID"; Code[50])
+        {
+            DataClassification = CustomerContent;
+            Caption = 'User ID';
+        }
     }
 
     keys
