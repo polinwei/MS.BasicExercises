@@ -32,7 +32,8 @@ page 60100 "Basic Table Page"
                             // **修正步驟 2: 將選取到的使用者名稱賦值給 Rec 欄位**
                             Rec."Name" := UserRec."User Name"; // 確定這是你希望儲存的欄位
 
-                            // **修正步驟 3: 將新的值賦予給 Text 參數** // 這是確保在 OnLookup 結束後，欄位顯示新值的關鍵步驟
+                            // **修正步驟 3: 將新的值賦予給 Text 參數** 
+                            // 這是確保在 OnLookup 結束後，欄位顯示新值的關鍵步驟
                             Text := Rec."Name";
 
                             // 接著處理 Description 欄位更新邏輯
@@ -71,6 +72,26 @@ page 60100 "Basic Table Page"
                 {
                     ApplicationArea = All;
                 }
+            }
+        }
+    }
+    actions
+    {
+        area(Processing)
+        {
+            action(DeleteAllRecords)
+            {
+                Caption = '刪除所有資料';
+                Image = Delete;
+                trigger OnAction()
+                var
+                    RecRef: RecordRef;
+                begin
+                    RecRef.Open(Database::"Basic Table");
+                    RecRef.DeleteAll();
+                    RecRef.Reset();
+                    Message('已清空 Basic Table 資料');
+                end;
             }
         }
     }
