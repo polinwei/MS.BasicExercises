@@ -61,13 +61,14 @@ page 60102 "Basic Table ActionBar Page"
                                 BasicTableRec.Reset();
                                 BasicTableRec.SetRange(Name, UserRec."User Name");
                                 if BasicTableRec.IsEmpty then begin
+                                    Clear(BasicTableRec); // ✅ 清乾淨，避免沿用舊 ID
                                     BasicTableRec.Init();
 
                                     // *** 關鍵修正：對於 AutoIncrement 欄位，手動將其設置為 0 (或不設置/賦值) 是必須的 ***
                                     // 雖然 Init() 已經將其設為預設值，但明確設置可以避免潛在的衝突。
                                     // 由於 ID 是 AutoIncrement，我們應該讓它保持預設值，但為了確保 Init() 沒有被其他邏輯覆蓋，
                                     // 這裡明確寫上讓其為 0，確保 Insert(true) 時能觸發自動編號。
-                                    BasicTableRec.ID := 0;
+                                    //BasicTableRec.ID := 0;
 
                                     BasicTableRec.Name := UserRec."User Name";
                                     BasicTableRec.Description := UserRec."Full Name";
