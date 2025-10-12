@@ -124,17 +124,21 @@ page 60100 "Basic Table Page"
                         // 遍歷所有選中的使用者
                         if UserRec.FindSet() then begin
                             repeat
-                                // 準備一筆新的 Basic Table 記錄
-                                BasicTableRec.Init();
-                                Clear(BasicTableRec); // 清乾淨，避免沿用舊 ID
-                                // 將選中的使用者資料賦值給新記錄
-                                BasicTableRec.Name := UserRec."User Name";
-                                BasicTableRec.Description := UserRec."Full Name";
+                                BasicTableRec.Reset();
+                                BasicTableRec.SetRange(Name, UserRec."User Name"); // 檢查每一筆使用者資料是否已存在
+                                if BasicTableRec.IsEmpty then begin
+                                    // 準備一筆新的 Basic Table 記錄
+                                    BasicTableRec.Init();
+                                    Clear(BasicTableRec); // 清乾淨，避免沿用舊 ID
+                                                          // 將選中的使用者資料賦值給新記錄
+                                    BasicTableRec.Name := UserRec."User Name";
+                                    BasicTableRec.Description := UserRec."Full Name";
 
-                                // 插入新記錄。如果 ID 是 AutoIncrement (如 BasicTable.al)，
-                                // 則不需要手動設定 ID。
-                                BasicTableRec.Insert(true); // true 參數表示即使記錄已存在也不報錯 (通常用於有 Key 衝突時)
-                                UsersAdded += 1;
+                                    // 插入新記錄。如果 ID 是 AutoIncrement (如 BasicTable.al)，
+                                    // 則不需要手動設定 ID。
+                                    BasicTableRec.Insert(true); // true 參數表示即使記錄已存在也不報錯 (通常用於有 Key 衝突時)
+                                    UsersAdded += 1;
+                                end;
                             until UserRec.Next() = 0;
                         end;
 
