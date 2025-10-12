@@ -93,6 +93,60 @@ page 60100 "Basic Table Page"
                     Message('已清空 Basic Table 資料');
                 end;
             }
+
+            // **新增按鍵 action(AddUsers)**
+            action(AddUsers)
+            {
+                Caption = '從 Users 新增多筆';
+                Image = User;
+                Promoted = true;
+                PromotedCategory = Process;
+                ApplicationArea = All;
+
+                trigger OnAction()
+                var
+                    UserPage: Page Users; // 宣告 Users 頁面的變數
+                    UserRec: Record User; // 宣告 User Table 的 Record 變數
+                    BasicTableRec: Record "Basic Table"; // 宣告 Basic Table 的 Record 變數
+                    UsersAdded: Integer;
+                begin
+                    // 設定 Users 頁面為 Lookup 模式，允許多選
+                    UserPage.LookupMode(true);
+
+                    // 執行 Users 頁面，並檢查是否點擊了 "OK"
+                    if UserPage.RunModal() = ACTION::LookupOK then begin
+
+                        // 取得使用者在 Users 頁面選中的記錄篩選器
+                        UserPage.GetRecord(UserRec); // 取得第一個選中的記錄並設定給 UserRec
+                        UserPage.SetSelectionFilter(UserRec); // 將選取的篩選器設定給 UserRec
+
+                        UsersAdded := 0;
+                        // 遍歷所有選中的使用者
+                        if UserRec.FindSet() then begin
+                            repeat
+                                // 準備一筆新的 Basic Table 記錄
+                                BasicTableRec.Init();
+                                Clear(BasicTableRec); // 清乾淨，避免沿用舊 ID
+                                // 將選中的使用者資料賦值給新記錄
+                                BasicTableRec.Name := UserRec."User Name";
+                                BasicTableRec.Description := UserRec."Full Name";
+
+                                // 插入新記錄。如果 ID 是 AutoIncrement (如 BasicTable.al)，
+                                // 則不需要手動設定 ID。
+                                BasicTableRec.Insert(true); // true 參數表示即使記錄已存在也不報錯 (通常用於有 Key 衝突時)
+                                UsersAdded += 1;
+                            until UserRec.Next() = 0;
+                        end;
+
+                        // 刷新當前頁面以顯示新增的記錄
+                        CurrPage.Update();
+
+                        // 顯示新增結果
+                        Message('%1 筆使用者資料已成功新增到 Basic Table。', UsersAdded);
+                    end;
+                end;
+            }
+            // **新增按鍵 action(AddUsers) 結束**
         }
     }
 }

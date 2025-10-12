@@ -61,7 +61,7 @@ page 60102 "Basic Table ActionBar Page"
                                 BasicTableRec.Reset();
                                 BasicTableRec.SetRange(Name, UserRec."User Name");
                                 if BasicTableRec.IsEmpty then begin
-                                    Clear(BasicTableRec); // ✅ 清乾淨，避免沿用舊 ID
+                                    Clear(BasicTableRec); // 清乾淨，避免沿用舊 ID
                                     BasicTableRec.Init();
 
                                     // *** 關鍵修正：對於 AutoIncrement 欄位，手動將其設置為 0 (或不設置/賦值) 是必須的 ***
