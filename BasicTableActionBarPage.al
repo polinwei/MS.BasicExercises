@@ -1,4 +1,4 @@
-page 60102 "Basic Table ActionBar Page"
+page 60101 "Basic Table ActionBar Page"
 {
     PageType = List;
     ApplicationArea = All;
@@ -92,12 +92,9 @@ page 60102 "Basic Table ActionBar Page"
                 Image = Delete;
                 trigger OnAction()
                 var
-                    RecRef: RecordRef;
+                    BasicTableTools: Codeunit "Basic Table Tools"; // 宣告新的 Codeunit 變數
                 begin
-                    RecRef.Open(Database::"Basic Table");
-                    RecRef.DeleteAll();
-                    RecRef.Reset();
-                    Message('已清空 Basic Table 資料');
+                    BasicTableTools.DeleteAllBasicTableRecords();
                 end;
             }
         }

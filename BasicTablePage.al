@@ -85,12 +85,9 @@ page 60100 "Basic Table Page"
                 Image = Delete;
                 trigger OnAction()
                 var
-                    RecRef: RecordRef;
+                    BasicTableTools: Codeunit "Basic Table Tools"; // 宣告新的 Codeunit 變數
                 begin
-                    RecRef.Open(Database::"Basic Table");
-                    RecRef.DeleteAll();
-                    RecRef.Reset();
-                    Message('已清空 Basic Table 資料');
+                    BasicTableTools.DeleteAllBasicTableRecords();
                 end;
             }
 
