@@ -13,23 +13,23 @@ page 60103 "Basic Table Field Explorer"
             group(Control)
             {
 
-                field(SelectedTableId; SelectedTableId)
+                field(TableName; Rec.TableName)
                 {
                     ApplicationArea = All;
-                    Caption = 'Select Table';
-                    ToolTip = '選擇要檢視欄位的 Table';
-                    TableRelation = AllObjWithCaption."Object ID" where("Object Type" = const(Table));
+                    Caption = 'Table Name';
+                    ToolTip = '輸入要檢視的表名稱（例如 user ，輸入後會自動載入欄位資料）';
                     trigger OnValidate()
                     begin
                         ResolveTableId();
                         LoadTableFields();
                     end;
                 }
-                field(TableName; Rec.TableName)
+                field(SelectedTableId; SelectedTableId)
                 {
                     ApplicationArea = All;
-                    Caption = 'Table Name';
-                    ToolTip = '輸入要檢視的表名稱（例如 user ，輸入後會自動載入欄位資料）';
+                    Caption = 'Select Table';
+                    ToolTip = '選擇要檢視欄位的 Table';
+                    TableRelation = AllObjWithCaption."Object ID" where("Object Type" = const(Table));
                     trigger OnValidate()
                     begin
                         ResolveTableId();
