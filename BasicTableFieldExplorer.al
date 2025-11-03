@@ -3,7 +3,8 @@ page 60103 "Basic Table Field Explorer"
     Caption = 'Basic Table Field Explorer';
     PageType = List;
     ApplicationArea = All;
-    SourceTable = Field; // 使用虛擬表 Field (2000000041)
+    //SourceTable = Field; // 使用虛擬表 Field (2000000041) 改為使用自訂暫存表
+    SourceTable = "Basic Table Field Info";
     SourceTableTemporary = true;
 
     layout
@@ -13,13 +14,14 @@ page 60103 "Basic Table Field Explorer"
             group(Control)
             {
 
-                field(TableName; Rec.TableName)
+                field(TableName; TableName)
                 {
                     ApplicationArea = All;
                     Caption = 'Table Name';
                     ToolTip = '輸入要檢視的表名稱（例如 user ，輸入後會自動載入欄位資料）';
                     trigger OnValidate()
                     begin
+                        SelectedTableId := 0;
                         ResolveTableId();
                         LoadTableFields();
                     end;
@@ -32,6 +34,7 @@ page 60103 "Basic Table Field Explorer"
                     TableRelation = AllObjWithCaption."Object ID" where("Object Type" = const(Table));
                     trigger OnValidate()
                     begin
+                        TableName := '';
                         ResolveTableId();
                         LoadTableFields();
                     end;
@@ -62,12 +65,12 @@ page 60103 "Basic Table Field Explorer"
 
             repeater(Group)
             {
-                field("Field No."; Rec."No.") { ApplicationArea = All; Caption = 'Field No.'; }
-                field("Field Name"; Rec.FieldName) { ApplicationArea = All; Caption = 'Field Name'; }
-                field("Data Type"; Rec."Type") { ApplicationArea = All; Caption = 'Data Type'; }
-                // Length column removed because the virtual Field record does not have a 'Length' field
-                //field("Length"; Rec."Length") { ApplicationArea = All; Caption = 'Length'; }
-                field("Class"; Rec.Class) { ApplicationArea = All; Caption = 'Class'; }
+                field("Table No."; Rec."Table No.") { ApplicationArea = All; Caption = 'Table No.'; }
+                field("Field No."; Rec."Field No.") { ApplicationArea = All; Caption = 'Field No.'; }
+                field("Field Name"; Rec."Field Name") { ApplicationArea = All; Caption = 'Field Name'; }
+                field("Data Type"; Rec."Data Type") { ApplicationArea = All; Caption = 'Data Type'; }
+                field("Class"; Rec."Class") { ApplicationArea = All; Caption = 'Class'; }
+                field("Length"; Rec."Length") { ApplicationArea = All; Caption = 'Length'; }
             }
         }
     }
@@ -99,11 +102,10 @@ page 60103 "Basic Table Field Explorer"
         SelectedTableId: Integer;
         FilterDataType: Text[30];
 
-        FieldLength: Integer;
-
+    /** 解析 table 裡所有的欄位 */
     local procedure LoadTableFields()
     var
-        FieldTypeTxt: Text;
+        TempRec: Record "Basic Table Field Info" temporary;
     begin
         Rec.DeleteAll();
 
@@ -125,22 +127,24 @@ page 60103 "Basic Table Field Explorer"
                (StrPos(Format(FldRef.Type()), FilterDataType) = 0) then
                 continue;
 
-            Rec.Init();
-            Rec."TableNo" := TableId;
-            Rec."No." := FldRef.Number();
-            Rec.FieldName := FldRef.Name();
-            Rec."Type" := StrPos(Format(FldRef.Type()), FilterDataType);
-            FieldLength := FldRef.Length();
-            Rec.Insert();
+            TempRec.Init();
+            TempRec."Table No." := TableId;
+            TempRec."Field No." := FldRef.Number();
+            TempRec."Field Name" := FldRef.Name();
+            TempRec."Data Type" := Format(FldRef.Type());
+            TempRec."Class" := Format(FldRef.Class());
+            TempRec."Length" := FldRef.Length();
+            TempRec.Insert();
         end;
-
+        Rec.Copy(TempRec, true);
         CurrPage.Update(false);
     end;
 
+    /** 解析 table 的 ID 值 */
     local procedure ResolveTableId()
     begin
         Clear(TableId);
-        if (Rec.TableName = '') and (SelectedTableId = 0) then
+        if (TableName = '') and (SelectedTableId = 0) then
             exit;
 
         AllTables.Reset();
@@ -158,19 +162,20 @@ page 60103 "Basic Table Field Explorer"
         end;
 
 
-        if Rec.TableName <> '' then begin
-            AllTables.SetRange("Object Caption", Rec.TableName);
+        if TableName <> '' then begin
+            AllTables.SetRange("Object Caption", TableName);
             if not AllTables.FindFirst() then
-                AllTables.SetRange("Object Name", Rec.TableName);
+                AllTables.SetRange("Object Name", TableName);
 
             if AllTables.FindFirst() then
                 TableId := AllTables."Object ID"
             else
-                Message('找不到名為 "%1" 的 Table。', Rec.TableName);
+                Message('找不到名為 "%1" 的 Table。', TableName);
         end;
 
     end;
 
+    /** Record 先關閉再打開 table */
     local procedure TryOpenTable(TableId: Integer): Boolean
     var
         MetaTables: Record AllObjWithCaption;
